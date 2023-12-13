@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Transaksi_model extends CI_Model {
+class Transaksi_model extends CI_Model
+{
 
 	private $table = 'transaksi';
 
@@ -24,11 +25,14 @@ class Transaksi_model extends CI_Model {
 		return $this->db->insert($this->table, $data);
 	}
 
-	public function read()
+	public function read($tanggal)
 	{
+		!$tanggal ? $date = date('Y-m-d') : $date = $tanggal;
+		//echo $tanggal;
 		$this->db->select('transaksi.id, transaksi.tanggal, transaksi.barcode, transaksi.qty, transaksi.total_bayar, transaksi.jumlah_uang, transaksi.diskon, pelanggan.nama as pelanggan');
 		$this->db->from($this->table);
 		$this->db->join('pelanggan', 'transaksi.pelanggan = pelanggan.id', 'left outer');
+		$this->db->where('DATE_FORMAT(tanggal, "%Y-%m-%d")=', $date);
 		return $this->db->get();
 	}
 
@@ -42,9 +46,19 @@ class Transaksi_model extends CI_Model {
 	{
 		$total = explode(',', $qty);
 		foreach ($barcode as $key => $value) {
+			if (isset($total[$key])) $jml = $total[$key];
+			else $jml = "<font style='color:red'>null</font>";
 			$this->db->select('nama_produk');
 			$this->db->where('id', $value);
-			$data[] = '<tr><td>'.$this->db->get('produk')->row()->nama_produk.' ('.$total[$key].')</td></tr>';
+			if (isset($this->db->get('produk')->row()->nama_produk)) {
+				$this->db->select('nama_produk');
+				$this->db->where('id', $value);
+				$nama_produk = $this->db->get('produk')->row()->nama_produk;
+			} else {
+				$nama_produk = "<font style='color:red'>Barang dengan id = $value Sudah di Hapus</font>";
+			}
+			$data[] = '<tr><td>[' . $value . '] ' . $nama_produk . ' (' . $jml . ')</td></tr>';
+			$nama_produk = "";
 		}
 		return join($data);
 	}
@@ -82,7 +96,13 @@ class Transaksi_model extends CI_Model {
 		$this->db->where('transaksi.id', $id);
 		return $this->db->get()->row();
 	}
-
+	public function getSummary($date)
+	{
+		$this->db->select('count(*) as jmltransaksi,sum(total_bayar) as rptransaksi');
+		$this->db->from('transaksi');
+		$this->db->where('DATE_FORMAT(tanggal, "%Y-%m-%d")=', $date);
+		return $this->db->get()->row();
+	}
 	public function getName($barcode)
 	{
 		foreach ($barcode as $b) {
@@ -92,7 +112,6 @@ class Transaksi_model extends CI_Model {
 		}
 		return $data;
 	}
-
 }
 
 /* End of file Transaksi_model.php */

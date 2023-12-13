@@ -1,12 +1,13 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Transaksi extends CI_Controller {
+class Transaksi extends CI_Controller
+{
 
 	public function __construct()
 	{
 		parent::__construct();
-		if ($this->session->userdata('status') !== 'login' ) {
+		if ($this->session->userdata('status') !== 'login') {
 			redirect('/');
 		}
 		$this->load->model('transaksi_model');
@@ -20,19 +21,26 @@ class Transaksi extends CI_Controller {
 	public function read()
 	{
 		// header('Content-type: application/json');
-		if ($this->transaksi_model->read()->num_rows() > 0) {
-			foreach ($this->transaksi_model->read()->result() as $transaksi) {
+		$tanggalInput = $this->input->get('tanggal2');
+		if ($this->transaksi_model->read($tanggalInput)->num_rows() > 0) {
+			$no = 0;
+			foreach ($this->transaksi_model->read($tanggalInput)->result() as $transaksi) {
+				//if ($no < 54) {
 				$barcode = explode(',', $transaksi->barcode);
+				if (isset($barcode)) $idbarang = '<table>' . $this->transaksi_model->getProduk($barcode, $transaksi->qty) . '</table>';
+				else $idbarang = '<table>Barang Sudah Dihapus</table>';
 				$tanggal = new DateTime($transaksi->tanggal);
 				$data[] = array(
 					'tanggal' => $tanggal->format('d-m-Y H:i:s'),
-					'nama_produk' => '<table>'.$this->transaksi_model->getProduk($barcode, $transaksi->qty).'</table>',
-					'total_bayar' => $transaksi->total_bayar,
-					'jumlah_uang' => $transaksi->jumlah_uang,
+					'nama_produk' => $idbarang,
+					'total_bayar' => number_format($transaksi->total_bayar, 0, ',', '.'),
+					'jumlah_uang' => number_format($transaksi->jumlah_uang, 0, ',', '.'),
 					'diskon' => $transaksi->diskon,
 					'pelanggan' => $transaksi->pelanggan,
-					'action' => '<a class="btn btn-sm btn-success" href="'.site_url('transaksi/cetak/').$transaksi->id.'">Print</a> <button class="btn btn-sm btn-danger" onclick="remove('.$transaksi->id.')">Delete</button>'
+					'action' => '<a class="btn btn-sm btn-success" href="' . site_url('transaksi/cetak/') . $transaksi->id . '">Print</a> <button class="btn btn-sm btn-danger" onclick="remove(' . $transaksi->id . ')">Delete</button>'
 				);
+				//}
+				$no++;
 			}
 		} else {
 			$data = array();
@@ -81,7 +89,7 @@ class Transaksi extends CI_Controller {
 	public function cetak($id)
 	{
 		$produk = $this->transaksi_model->getAll($id);
-		
+
 		$tanggal = new DateTime($produk->tanggal);
 		$barcode = explode(',', $produk->barcode);
 		$qty = explode(',', $produk->qty);
@@ -111,7 +119,7 @@ class Transaksi extends CI_Controller {
 		header('Content-type: application/json');
 		$day = $this->input->post('day');
 		foreach ($day as $key => $value) {
-			$now = date($day[$value].' m Y');
+			$now = date($day[$value] . ' m Y');
 			if ($qty = $this->transaksi_model->penjualanBulan($now) !== []) {
 				$data[] = array_sum($this->transaksi_model->penjualanBulan($now));
 			} else {
@@ -129,7 +137,7 @@ class Transaksi extends CI_Controller {
 		echo json_encode($total);
 	}
 
-	public function transaksi_terakhir($value='')
+	public function transaksi_terakhir($value = '')
 	{
 		header('Content-type: application/json');
 		$now = date('d m Y');
@@ -138,7 +146,19 @@ class Transaksi extends CI_Controller {
 		}
 		echo json_encode($total);
 	}
-
+	public function getSummary()
+	{
+		header('Content-type: application/json');
+		$tanggal = $this->input->get('tanggal2');
+		!$tanggal ? $date = date('Y-m-d') : $date = $tanggal;
+		$total = $this->transaksi_model->getSummary($date);
+		$data[] = array(
+			'jmltransaksi' => $total->jmltransaksi,
+			'rptransaksi' => $total->rptransaksi,
+		);
+		$data = array('data' => $data);
+		echo json_encode($data);
+	}
 }
 
 /* End of file Transaksi.php */
