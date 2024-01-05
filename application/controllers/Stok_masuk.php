@@ -1,12 +1,13 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Stok_masuk extends CI_Controller {
+class Stok_masuk extends CI_Controller
+{
 
 	public function __construct()
 	{
 		parent::__construct();
-		if ($this->session->userdata('status') !== 'login' ) {
+		if ($this->session->userdata('status') !== 'login') {
 			redirect('/');
 		}
 		$this->load->model('stok_masuk_model');
@@ -28,6 +29,7 @@ class Stok_masuk extends CI_Controller {
 					'barcode' => $stok_masuk->barcode,
 					'nama_produk' => $stok_masuk->nama_produk,
 					'jumlah' => $stok_masuk->jumlah,
+					'harga_perolehan' => $stok_masuk->harga_perolehan,
 					'keterangan' => $stok_masuk->keterangan
 				);
 			}
@@ -45,14 +47,16 @@ class Stok_masuk extends CI_Controller {
 		$id = $this->input->post('barcode');
 		$jumlah = $this->input->post('jumlah');
 		$stok = $this->stok_masuk_model->getStok($id)->stok;
-		$rumus = max($stok + $jumlah,0);
-		$addStok = $this->stok_masuk_model->addStok($id, $rumus);
+		$rumus = max($stok + $jumlah, 0);
+		$harga_perolehan = $this->input->post('harga_perolehan');
+		$addStok = $this->stok_masuk_model->addStok($id, $rumus, $harga_perolehan);
 		if ($addStok) {
 			$tanggal = new DateTime($this->input->post('tanggal'));
 			$data = array(
 				'tanggal' => $tanggal->format('Y-m-d H:i:s'),
 				'barcode' => $id,
 				'jumlah' => $jumlah,
+				'harga_perolehan' => $this->input->post('harga_perolehan'),
 				'keterangan' => $this->input->post('keterangan'),
 				'supplier' => $this->input->post('supplier')
 			);
@@ -65,7 +69,7 @@ class Stok_masuk extends CI_Controller {
 	public function get_barcode()
 	{
 		$barcode = $this->input->post('barcode');
-		$kategori = $this->stok_masuk_model->getKategori($id);
+		$kategori = $this->stok_masuk_model->getKategori(isset($id));
 		if ($kategori->row()) {
 			echo json_encode($kategori->row());
 		}
@@ -102,7 +106,6 @@ class Stok_masuk extends CI_Controller {
 		$total = $this->stok_masuk_model->stokHari($now);
 		echo json_encode($total->total == null ? 0 : $total);
 	}
-
 }
 
 /* End of file Stok_masuk.php */

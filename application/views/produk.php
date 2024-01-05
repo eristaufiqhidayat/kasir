@@ -53,6 +53,7 @@
                     <th>Nama</th>
                     <th>Satuan</th>
                     <th>Kategori</th>
+                    <th>Harga Perolehan</th>
                     <th>Harga</th>
                     <th>Stok</th>
                     <th>Actions</th>

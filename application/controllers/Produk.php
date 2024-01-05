@@ -28,6 +28,7 @@ class Produk extends CI_Controller
 					'nama' => $produk->nama_produk,
 					'kategori' => $produk->kategori,
 					'satuan' => $produk->satuan,
+					'harga_perolehan' => $produk->harga_perolehan,
 					'harga' => $produk->harga,
 					'stok' => $produk->stok,
 					'action' => '<button class="btn btn-sm btn-success" onclick="edit(' . $produk->id . ')">Edit</button>'

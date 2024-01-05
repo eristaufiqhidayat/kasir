@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Stok_masuk_model extends CI_Model {
+class Stok_masuk_model extends CI_Model
+{
 
 	private $table = 'stok_masuk';
 
@@ -12,7 +13,7 @@ class Stok_masuk_model extends CI_Model {
 
 	public function read()
 	{
-		$this->db->select('stok_masuk.tanggal, stok_masuk.jumlah, stok_masuk.keterangan, produk.barcode, produk.nama_produk');
+		$this->db->select('stok_masuk.tanggal, stok_masuk.jumlah,stok_masuk.harga_perolehan, stok_masuk.keterangan, produk.barcode, produk.nama_produk');
 		$this->db->from($this->table);
 		$this->db->join('produk', 'produk.id = stok_masuk.barcode');
 		return $this->db->get();
@@ -20,7 +21,7 @@ class Stok_masuk_model extends CI_Model {
 
 	public function laporan()
 	{
-		$this->db->select('stok_masuk.tanggal, stok_masuk.jumlah, stok_masuk.keterangan, produk.barcode, produk.nama_produk, supplier.nama as supplier');
+		$this->db->select('stok_masuk.tanggal, stok_masuk.jumlah,stok_masuk.harga_perolehan, stok_masuk.keterangan, produk.barcode, produk.nama_produk, supplier.nama as supplier');
 		$this->db->from($this->table);
 		$this->db->join('produk', 'produk.id = stok_masuk.barcode');
 		$this->db->join('supplier', 'supplier.id = stok_masuk.supplier', 'left outer');
@@ -34,10 +35,11 @@ class Stok_masuk_model extends CI_Model {
 		return $this->db->get('produk')->row();
 	}
 
-	public function addStok($id,$stok)
+	public function addStok($id, $stok, $harga_perolehan)
 	{
 		$this->db->where('id', $id);
 		$this->db->set('stok', $stok);
+		$this->db->set('harga_perolehan', $harga_perolehan);
 		return $this->db->update('produk');
 	}
 
@@ -45,7 +47,6 @@ class Stok_masuk_model extends CI_Model {
 	{
 		return $this->db->query("SELECT SUM(jumlah) AS total FROM stok_masuk WHERE DATE_FORMAT(tanggal, '%d %m %Y') = '$hari'")->row();
 	}
-
 }
 
 /* End of file Stok_masuk_model.php */
