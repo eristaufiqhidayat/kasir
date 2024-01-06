@@ -93,6 +93,12 @@
                 <p>Stok Keluar</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="<?php echo site_url('stok_opname') ?>" class="nav-link <?php echo $uri == 'stok_keluar' ? 'active' : 'no' ?>">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Stok Opname</p>
+              </a>
+            </li>
           </ul>
         </li>
         <li class="nav-item">
@@ -128,7 +134,7 @@
             </li>
           </ul>
         </li>
-        <?php if ($role === 'admin'): ?>
+        <?php if ($role === 'admin') : ?>
           <li class="nav-item">
             <a href="<?php echo site_url('pengaturan') ?>" class="nav-link <?php echo $uri == 'pengaturan' ? 'active' : 'no' ?>">
               <i class="fas fa-cog nav-icon"></i>
@@ -142,7 +148,7 @@
             </a>
           </li>
         <?php endif ?>
-       
+
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

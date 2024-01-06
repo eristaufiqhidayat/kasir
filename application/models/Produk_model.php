@@ -34,7 +34,7 @@ class Produk_model extends CI_Model
 
 	public function getProduk($id)
 	{
-		$this->db->select('produk.id, produk.barcode, produk.nama_produk, produk.harga, produk.stok, kategori_produk.id as kategori_id, kategori_produk.kategori, satuan_produk.id as satuan_id, satuan_produk.satuan');
+		$this->db->select('produk.id, produk.barcode, produk.nama_produk, produk.harga_perolehan,produk.harga, produk.stok, kategori_produk.id as kategori_id, kategori_produk.kategori, satuan_produk.id as satuan_id, satuan_produk.satuan');
 		$this->db->from($this->table);
 		$this->db->join('kategori_produk', 'produk.kategori = kategori_produk.id');
 		$this->db->join('satuan_produk', 'produk.satuan = satuan_produk.id');
@@ -72,7 +72,7 @@ class Produk_model extends CI_Model
 
 	public function dataStok()
 	{
-		return $this->db->query('SELECT produk.nama_produk, produk.stok FROM `produk` ORDER BY CONVERT(stok, decimal) DESC LIMIT 50')->result();
+		return $this->db->query('SELECT produk.nama_produk, produk.stok FROM `produk` where produk.stok <> 0 ORDER BY CONVERT(stok, decimal) DESC LIMIT 50')->result();
 	}
 }
 

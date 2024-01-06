@@ -6,13 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Produk</title>
+  <title>Stok Masuk</title>
   <link rel="stylesheet" href="<?php echo base_url('assets/vendor/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') ?>">
   <link rel="stylesheet" href="<?php echo base_url('assets/vendor/adminlte/plugins/sweetalert2/sweetalert2.min.css') ?>">
   <link rel="stylesheet" href="<?php echo base_url('assets/vendor/adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') ?>">
+  <link rel="stylesheet" href="<?php echo base_url('assets/vendor/adminlte/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css') ?>">
   <link rel="stylesheet" href="<?php echo base_url('assets/vendor/adminlte/plugins/select2/css/select2.min.css') ?>">
   <link rel="stylesheet" href="<?php echo base_url('assets/vendor/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') ?>">
-  <link data-require="sweet-alert@*" data-semver="0.4.2" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
   <?php $this->load->view('partials/head'); ?>
 </head>
 
@@ -30,7 +30,7 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col">
-              <h1 class="m-0 text-dark">Produk</h1>
+              <h1 class="m-0 text-dark">Stok Opname</h1>
             </div><!-- /.col -->
           </div><!-- /.row -->
         </div><!-- /.container-fluid -->
@@ -42,21 +42,20 @@
         <div class="container-fluid">
           <div class="card">
             <div class="card-header">
-              <button class="btn btn-success" data-toggle="modal" data-target="#modal" onclick="add()">Add</button>
+              <button class="btn btn-success" data-toggle="modal" data-target="#modal">Add</button>
             </div>
             <div class="card-body">
-              <table class="table w-100 table-bordered table-hover" id="produk">
+              <table class="table w-100 table-bordered table-hover" id="stok_opname">
                 <thead>
                   <tr>
                     <th>No</th>
+                    <th>Tanggal</th>
                     <th>Barcode</th>
-                    <th>Nama</th>
-                    <th>Satuan</th>
-                    <th>Kategori</th>
+                    <th>Nama Produk</th>
+                    <th>Stok Awal</th>
+                    <th>Stok Opname</th>
                     <th>Harga Perolehan</th>
-                    <th>Harga</th>
-                    <th>Stok</th>
-                    <th>Actions</th>
+                    <th>Keterangan</th>
                   </tr>
                 </thead>
               </table>
@@ -81,34 +80,36 @@
         </div>
         <div class="modal-body">
           <form id="form">
-            <input type="hidden" name="id">
+            <div class="form-group">
+              <label>Tanggal</label>
+              <input id="tanggal" type="text" class="form-control" placeholder="Kategori" name="tanggal" required>
+            </div>
             <div class="form-group">
               <label>Barcode</label>
-              <input type="text" class="form-control" placeholder="Barcode" name="barcode" required>
+              <select name="barcode" id="barcode" class="form-control select2" required></select>
             </div>
             <div class="form-group">
-              <label>Nama</label>
-              <input type="text" class="form-control" placeholder="Nama" name="nama_produk" required>
-            </div>
-            <div class="form-group">
-              <label>Satuan</label>
-              <select name="satuan" id="satuan" class="form-control select2" required></select>
-            </div>
-            <div class="form-group">
-              <label>Kategori</label>
-              <select name="kategori" id="kategori" class="form-control select2" required></select>
+              <label>Jumlah</label>
+              <input type="number" class="form-control" placeholder="Jumlah" name="jumlah" required>
             </div>
             <div class="form-group">
               <label>Harga Perolehan</label>
-              <input type="text" class="form-control" placeholder="Harga Perolehan" name="harga_perolehan">
+              <input type="number" class="form-control" placeholder="harga_perolehan" name="harga_perolehan" required>
             </div>
             <div class="form-group">
-              <label>Harga</label>
-              <input type="text" class="form-control" placeholder="Harga" name="harga" required>
+              <label>Keterangan</label>
+              <select name="keterangan" class="form-control" onchange="checkKeterangan(this)">
+                <option value="penambahan">Penambahan</option>
+                <option value="lain">Lain</option>
+              </select>
             </div>
-            <div class="form-group">
-              <label>Stok</label>
-              <input type="text" class="form-control" placeholder="Stok" name="stok" value="0" readonly>
+            <div class="form-group supplier">
+              <label>Supplier</label>
+              <select name="supplier" class="form-control select2" id="supplier"></select>
+            </div>
+            <div class="form-group lain d-none">
+              <label>Lain</label>
+              <input type="text" class="form-control" placeholder="Lain">
             </div>
             <button class="btn btn-success" type="submit">Add</button>
             <button class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -124,18 +125,16 @@
   <script src="<?php echo base_url('assets/vendor/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') ?>"></script>
   <script src="<?php echo base_url('assets/vendor/adminlte/plugins/jquery-validation/jquery.validate.min.js') ?>"></script>
   <script src="<?php echo base_url('assets/vendor/adminlte/plugins/sweetalert2/sweetalert2.min.js') ?>"></script>
+  <script src="<?php echo base_url('assets/vendor/adminlte/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js') ?>"></script>
+  <script src="<?php echo base_url('assets/vendor/adminlte/plugins/moment/moment.min.js') ?>"></script>
   <script src="<?php echo base_url('assets/vendor/adminlte/plugins/select2/js/select2.min.js') ?>"></script>
-  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script>
-    var readUrl = '<?php echo site_url('produk/read') ?>';
-    var addUrl = '<?php echo site_url('produk/add') ?>';
-    var deleteUrl = '<?php echo site_url('produk/delete') ?>';
-    var editUrl = '<?php echo site_url('produk/edit') ?>';
-    var getProdukUrl = '<?php echo site_url('produk/get_produk') ?>';
-    var kategoriSearchUrl = '<?php echo site_url('kategori_produk/search') ?>';
-    var satuanSearchUrl = '<?php echo site_url('satuan_produk/search') ?>';
+    var readUrl = '<?php echo site_url('stok_opname/read') ?>';
+    var addUrl = '<?php echo site_url('stok_opname/add') ?>';
+    var getBarcodeUrl = '<?php echo site_url('produk/get_barcode') ?>';
+    var supplierSearchUrl = '<?php echo site_url('supplier/search') ?>';
   </script>
-  <script src="<?php echo base_url('assets/js/produk.min.js') ?>"></script>
+  <script src="<?php echo base_url('assets/js/stok_opname.min.js') ?>"></script>
 </body>
 
 </html>
