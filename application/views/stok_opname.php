@@ -86,11 +86,15 @@
             </div>
             <div class="form-group">
               <label>Barcode</label>
-              <select name="barcode" id="barcode" class="form-control select2" required></select>
+              <select name="barcode" id="barcode" class="form-control select2" onchange="checkdetil()" required></select>
             </div>
             <div class="form-group">
-              <label>Jumlah</label>
+              <label>Stok</label>
               <input type="number" class="form-control" placeholder="Jumlah" name="jumlah" required>
+            </div>
+            <div class="form-group">
+              <label>Stok Opname</label>
+              <input type="number" class="form-control" placeholder="Jumlah Opname" name="jumlah_opname" required>
             </div>
             <div class="form-group">
               <label>Harga Perolehan</label>
@@ -98,10 +102,7 @@
             </div>
             <div class="form-group">
               <label>Keterangan</label>
-              <select name="keterangan" class="form-control" onchange="checkKeterangan(this)">
-                <option value="penambahan">Penambahan</option>
-                <option value="lain">Lain</option>
-              </select>
+              <input type="text" class="form-control" placeholder="Keterangan" name="keterangan" required>
             </div>
             <div class="form-group supplier">
               <label>Supplier</label>
@@ -132,6 +133,7 @@
     var readUrl = '<?php echo site_url('stok_opname/read') ?>';
     var addUrl = '<?php echo site_url('stok_opname/add') ?>';
     var getBarcodeUrl = '<?php echo site_url('produk/get_barcode') ?>';
+    var getBarcodebyadUrl = '<?php echo site_url('produk/get_barcodebyid') ?>';
     var supplierSearchUrl = '<?php echo site_url('supplier/search') ?>';
   </script>
   <script src="<?php echo base_url('assets/js/stok_opname.min.js') ?>"></script>

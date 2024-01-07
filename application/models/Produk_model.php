@@ -45,11 +45,17 @@ class Produk_model extends CI_Model
 	public function getBarcode($search = '')
 	{
 		$this->db->select('produk.id, produk.barcode,produk.nama_produk');
-		$this->db->like('barcode', $search);
-		$this->db->or_like('nama_produk', $search);
+		//$this->db->like('barcode', $search);
+		///$this->db->or_like('nama_produk', $search);
+		$this->db->where('stok >', 0);
 		return $this->db->get($this->table)->result();
 	}
-
+	public function getBarcodebyid($search = '')
+	{
+		$this->db->select('*');
+		$this->db->where('id', $search);
+		return $this->db->get($this->table)->result();
+	}
 	public function getNama($id)
 	{
 		$this->db->select('nama_produk, stok');

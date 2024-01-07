@@ -106,7 +106,13 @@ class Produk extends CI_Controller
 		}
 		echo json_encode($data);
 	}
-
+	public function get_barcodebyid()
+	{
+		//header('Content-type: application/json');
+		$barcode = $this->input->post('barcode');
+		$search = $this->produk_model->getBarcodebyid($barcode);
+		echo json_encode($search);
+	}
 	public function get_nama()
 	{
 		header('Content-type: application/json');

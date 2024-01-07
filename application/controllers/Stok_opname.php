@@ -46,18 +46,14 @@ class Stok_opname extends CI_Controller
 	public function add()
 	{
 		$id = $this->input->post('barcode');
-		$stokopname = $this->input->post('jumlah');
-		$stokawal = $this->stok_opname_model->getStok($id)->stok;
-		//$rumus = max($stok + $jumlah, 0);
-		$harga_perolehan = $this->input->post('harga_perolehan');
-		$addStok = $this->stok_opname_model->addStok($id, $stokopname, $harga_perolehan);
+		$addStok = $this->stok_opname_model->addStok($id, $this->input->post('jumlah_opname'), $this->input->post('harga_perolehan'));
 		if ($addStok) {
 			$tanggal = new DateTime($this->input->post('tanggal'));
 			$data = array(
 				'tanggal' => $tanggal->format('Y-m-d H:i:s'),
-				'barcode' => $id,
-				'jumlah' => $stokawal,
-				'jumlah_opname' => $stokopname,
+				'barcode' => $this->input->post('barcode'),
+				'jumlah' => $this->input->post('jumlah'),
+				'jumlah_opname' => $this->input->post('jumlah_opname'),
 				'harga_perolehan' => $this->input->post('harga_perolehan'),
 				'keterangan' => $this->input->post('keterangan'),
 				'supplier' => $this->input->post('supplier')
